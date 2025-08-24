@@ -65,35 +65,32 @@ class ActivityLog {
   }
 }
 
-module.exports = ActivityLog;
-
-// Adicionar estes métodos à classe ActivityLog
-
-static async getTotalUsers() {
+// Adicionar métodos estáticos fora da classe
+ActivityLog.getTotalUsers = async function() {
   const query = 'SELECT COUNT(*) FROM users';
   const result = await pool.query(query);
   return parseInt(result.rows[0].count);
-}
+};
 
-static async getTotalDocuments() {
+ActivityLog.getTotalDocuments = async function() {
   const query = 'SELECT COUNT(*) FROM documents';
   const result = await pool.query(query);
   return parseInt(result.rows[0].count);
-}
+};
 
-static async getTotalSearches() {
+ActivityLog.getTotalSearches = async function() {
   const query = "SELECT COUNT(*) FROM activity_logs WHERE action = 'document_search'";
   const result = await pool.query(query);
   return parseInt(result.rows[0].count);
-}
+};
 
-static async getTotalExports() {
+ActivityLog.getTotalExports = async function() {
   const query = "SELECT COUNT(*) FROM activity_logs WHERE action = 'document_export'";
   const result = await pool.query(query);
   return parseInt(result.rows[0].count);
-}
+};
 
-static async getRecentActivities(limit = 10) {
+ActivityLog.getRecentActivities = async function(limit = 10) {
   const query = `
     SELECT al.id, al.action, al.entity_type, al.entity_id, al.details, al.ip_address, al.created_at, u.username
     FROM activity_logs al
@@ -103,4 +100,6 @@ static async getRecentActivities(limit = 10) {
   `;
   const result = await pool.query(query, [limit]);
   return result.rows;
-}
+};
+
+module.exports = ActivityLog;

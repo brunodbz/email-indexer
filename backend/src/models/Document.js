@@ -172,12 +172,11 @@ class Document {
   }
 }
 
-module.exports = Document;
-
-// Adicionar estes métodos à classe Document
-
-static async getTotalDocuments() {
+// Adicionar método estático fora da classe
+Document.getTotalDocuments = async function() {
   const query = 'SELECT COUNT(*) FROM documents';
   const result = await pool.query(query);
   return parseInt(result.rows[0].count);
-}
+};
+
+module.exports = Document;
