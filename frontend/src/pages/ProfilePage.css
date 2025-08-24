@@ -1,0 +1,19 @@
+.profile-page {
+  padding: 20px 0;
+}
+
+.profile-page h1 {
+  margin-bottom: 24px;
+  color: #333;
+}
+
+.profile-page .card {
+  margin-bottom: 20px;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,.1);
+}
+
+.profile-page .card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid rgba(0,0,0,.125);
+}

@@ -1,0 +1,21 @@
+.search-page {
+  padding: 20px 0;
+}
+
+.search-page h1 {
+  margin-bottom: 24px;
+  color: #333;
+}
+
+.search-page .input-group {
+  margin-bottom: 20px;
+}
+
+.search-page .table-responsive {
+  margin-top: 20px;
+}
+
+.search-page .text-break {
+  word-break: break-all;
+  max-width: 300px;
+}

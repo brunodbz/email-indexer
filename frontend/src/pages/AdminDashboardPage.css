@@ -1,0 +1,28 @@
+.admin-dashboard-page {
+  padding: 20px 0;
+}
+
+.admin-dashboard-page h1 {
+  margin-bottom: 24px;
+  color: #333;
+}
+
+.card {
+  margin-bottom: 20px;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,.1);
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+.display-4 {
+  font-size: 2.5rem;
+  font-weight: 300;
+}
+
+.form-switch {
+  padding-left: 2.5rem;
+}

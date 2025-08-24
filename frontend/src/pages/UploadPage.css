@@ -1,0 +1,14 @@
+.upload-page {
+  padding: 20px 0;
+}
+
+.upload-page h1 {
+  margin-bottom: 24px;
+  color: #333;
+}
+
+.upload-page pre {
+  font-size: 0.9rem;
+  max-height: 200px;
+  overflow-y: auto;
+}

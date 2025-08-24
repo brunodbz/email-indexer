@@ -1,0 +1,35 @@
+.mfa-setup-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 76px);
+  padding: 20px;
+}
+
+.mfa-setup-card {
+  width: 100%;
+  max-width: 500px;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.1);
+  background-color: white;
+}
+
+.mfa-setup-card h2 {
+  text-align: center;
+  margin-bottom: 24px;
+  color: #333;
+}
+
+.mfa-setup-card img {
+  margin: 15px 0;
+}
+
+.mfa-setup-card code {
+  word-break: break-all;
+  display: block;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  margin: 10px 0;
+}

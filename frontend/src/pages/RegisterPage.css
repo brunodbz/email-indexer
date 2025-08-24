@@ -1,0 +1,22 @@
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 76px);
+  padding: 20px;
+}
+
+.register-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.1);
+  background-color: white;
+}
+
+.register-card h2 {
+  text-align: center;
+  margin-bottom: 24px;
+  color: #333;
+}
