@@ -129,7 +129,7 @@ function AdminDashboardPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {dashboard.recentActivities.map(activity => (
+                      {dashboard.recentActivities.map((activity) => (
                         <tr key={activity.id}>
                           <td>{activity.username}</td>
                           <td>{activity.action}</td>
@@ -149,4 +149,4 @@ function AdminDashboardPage() {
   );
 }
 
-export default Admin 14. Arquivo:DashboardPage;
+export default AdminDashboardPage;
