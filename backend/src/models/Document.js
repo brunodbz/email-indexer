@@ -13,7 +13,13 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD,
 });
 
-const esClient = new Client({ node: process.env.ELASTICSEARCH_URL });
+let esClient;
+try {
+  esClient = new Client({ node: process.env.ELASTICSEARCH_URL });
+} catch (error) {
+  console.error('Erro ao inicializar Elasticsearch:', error);
+  esClient = null;
+}
 
 class Document {
   static async createTable() {
@@ -46,13 +52,24 @@ class Document {
     const values = [filename, originalName, size, userId, contentHash];
     const result = await pool.query(query, values);
     
-    // Indexar conteúdo no Elasticsearch
-    await this.indexContent(content, result.rows[0].id, userId);
+    // Indexar conteúdo no Elasticsearch (se disponível)
+    if (esClient) {
+      try {
+        await this.indexContent(content, result.rows[0].id, userId);
+      } catch (error) {
+        console.error('Erro ao indexar conteúdo no Elasticsearch:', error);
+      }
+    }
     
     return result.rows[0];
   }
 
   static async indexContent(content, documentId, userId) {
+    if (!esClient) {
+      console.warn('Elasticsearch não está disponível. Pulando indexação.');
+      return;
+    }
+    
     const lines = content.split('\n');
     const bulkOperations = [];
     
@@ -90,33 +107,42 @@ class Document {
   }
 
   static async searchByDomain(domain, page = 1, limit = 20) {
+    if (!esClient) {
+      throw new Error('Elasticsearch não está disponível para busca.');
+    }
+    
     const offset = (page - 1) * limit;
     
-    const { body } = await esClient.search({
-      index: process.env.ELASTICSEARCH_INDEX || 'document_lines',
-      body: {
-        query: {
-          match: {
-            domain: domain
-          }
-        },
-        from: offset,
-        size: limit
-      }
-    });
-    
-    const results = body.hits.hits.map(hit => ({
-      id: hit._id,
-      ...hit._source
-    }));
-    
-    return {
-      data: results,
-      total: body.hits.total.value,
-      page,
-      limit,
-      totalPages: Math.ceil(body.hits.total.value / limit)
-    };
+    try {
+      const { body } = await esClient.search({
+        index: process.env.ELASTICSEARCH_INDEX || 'document_lines',
+        body: {
+          query: {
+            match: {
+              domain: domain
+            }
+          },
+          from: offset,
+          size: limit
+        }
+      });
+      
+      const results = body.hits.hits.map(hit => ({
+        id: hit._id,
+        ...hit._source
+      }));
+      
+      return {
+        data: results,
+        total: body.hits.total.value,
+        page,
+        limit,
+        totalPages: Math.ceil(body.hits.total.value / limit)
+      };
+    } catch (error) {
+      console.error('Erro ao buscar no Elasticsearch:', error);
+      throw new Error('Erro ao buscar emails.');
+    }
   }
 
   static async getAll(page = 1, limit = 20) {
@@ -146,7 +172,6 @@ class Document {
   }
 
   static async exportToCsv(searchResults) {
-    const { createReadStream } = require('fs');
     const { parse } = require('json2csv');
     
     const fields = ['content', 'email', 'domain', 'upload_date'];
