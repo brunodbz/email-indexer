@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # Banco de Dados PostgreSQL
+  db:
+    image: postgres:14
+    container_name: email-indexer-db
+    environment:
+      POSTGRES_DB: email_indexer
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: yourpassword
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - email-indexer-network
+
+  # Elasticsearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.0
+    container_name: email-indexer-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    networks:
+      - email-indexer-network
+
+  # Backend API
+  backend:
+    build: ./backend
+    container_name: email-indexer-backend
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=email_indexer
+      - DB_USER=postgres
+      - DB_PASSWORD=yourpassword
+      - JWT_SECRET=your_jwt_secret_key_here
+      - JWT_EXPIRES_IN=24h
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_INDEX=document_lines
+      - UPLOAD_DIR=/app/uploads
+      - MAX_FILE_SIZE=10485760
+      - MFA_ISSUER=EmailIndexer
+    volumes:
+      - ./backend/uploads:/app/uploads
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+      - elasticsearch
+    networks:
+      - email-indexer-network
+    command: >
+      sh -c "npm run migrate && npm start"
+
+  # Frontend React
+  frontend:
+    build: ./frontend
+    container_name: email-indexer-frontend
+    environment:
+      - REACT_APP_API_URL=http://localhost:3000/api
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - email-indexer-network
+
+volumes:
+  postgres_data:
+  elasticsearch_data:
+
+networks:
+  email-indexer-network:
+    driver: bridge
